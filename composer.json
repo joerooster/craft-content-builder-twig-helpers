@@ -11,8 +11,8 @@
         "craft content builder twig helpers"
     ],
     "support": {
-        "docs": "https://github.com/prometeusweb/craft-content-builder-twig-helpers/craft-content-builder-twig-helpers/blob/master/README.md",
-        "issues": "https://github.com/prometeusweb/craft-content-builder-twig-helpers/craft-content-builder-twig-helpers/issues"
+        "docs": "https://github.com/prometeusweb/craft-content-builder-twig-helpers/blob/master/README.md",
+        "issues": "https://github.com/prometeusweb/craft-content-builder-twig-helpers/issues"
     },
     "license": "MIT",
     "authors": [
@@ -34,7 +34,7 @@
         "handle": "craft-content-builder-twig-helpers",
         "hasCpSettings": false,
         "hasCpSection": false,
-        "changelogUrl": "https://raw.githubusercontent.com/prometeusweb/craft-content-builder-twig-helpers/craft-content-builder-twig-helpers/master/CHANGELOG.md",
+        "changelogUrl": "https://raw.githubusercontent.com/prometeusweb/craft-content-builder-twig-helpers/master/CHANGELOG.md",
         "class": "prometeusweb\\craftcontentbuildertwighelpers\\CraftContentBuilderTwigHelpers"
     }
 }
