@@ -2,7 +2,6 @@
     "name": "prometeusweb/craft-content-builder-twig-helpers",
     "description": "A collection of custom helpers and filters for a content builder",
     "type": "craft-plugin",
-    "version": "1.0.0",
     "keywords": [
         "craft",
         "cms",
