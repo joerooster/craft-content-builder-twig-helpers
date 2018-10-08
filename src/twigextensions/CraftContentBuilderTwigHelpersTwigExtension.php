@@ -63,8 +63,8 @@ class CraftContentBuilderTwigHelpersTwigExtension extends \Twig_Extension
      */
     public function slugify(string $string = null): string
     {
-        if($text){
-        	return ElementHelper::createSlug($text);
+        if($string){
+        	return ElementHelper::createSlug($string);
         }
 
         throw new Exception("Missing text to be slugged");
