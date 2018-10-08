@@ -1,0 +1,40 @@
+{
+    "name": "prometeusweb/craft-content-builder-twig-helpers",
+    "description": "A collection of custom helpers and filters for a content builder",
+    "type": "craft-plugin",
+    "version": "1.0.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "craft content builder twig helpers"
+    ],
+    "support": {
+        "docs": "https://github.com/prometeusweb/craft-content-builder-twig-helpers/craft-content-builder-twig-helpers/blob/master/README.md",
+        "issues": "https://github.com/prometeusweb/craft-content-builder-twig-helpers/craft-content-builder-twig-helpers/issues"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "PrometeusWeb",
+            "homepage": "https://www.prometeusweb.com"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0.0-RC1"
+    },
+    "autoload": {
+        "psr-4": {
+          "prometeusweb\\craftcontentbuildertwighelpers\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Craft Content Builder Twig Helpers",
+        "handle": "craft-content-builder-twig-helpers",
+        "hasCpSettings": false,
+        "hasCpSection": false,
+        "changelogUrl": "https://raw.githubusercontent.com/prometeusweb/craft-content-builder-twig-helpers/craft-content-builder-twig-helpers/master/CHANGELOG.md",
+        "class": "prometeusweb\\craftcontentbuildertwighelpers\\CraftContentBuilderTwigHelpers"
+    }
+}
