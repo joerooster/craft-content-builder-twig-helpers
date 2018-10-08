@@ -21,6 +21,7 @@
             "homepage": "https://www.prometeusweb.com"
         }
     ],
+    "minimum-stability": "RC",
     "require": {
         "craftcms/cms": "^3.0.0-RC1"
     },
