@@ -10,6 +10,7 @@
 
 namespace prometeusweb\craftcontentbuildertwighelpers\twigextensions;
 
+use craft\helpers\ElementHelper;
 use prometeusweb\craftcontentbuildertwighelpers\CraftContentBuilderTwigHelpers;
 
 use Craft;
@@ -55,7 +56,7 @@ class CraftContentBuilderTwigHelpersTwigExtension extends \Twig_Extension
     /**
      * Transforms a string into a slugged string
      *
-     * Eg: "hello I'm a string" will be transformed into "hello-i-m-a-string"
+     * Eg: "hello! I'm a string" will be transformed into "hello-i-m-a-string"
      * 
      * @param null $string The string to be transformed in slug
      *
@@ -64,7 +65,7 @@ class CraftContentBuilderTwigHelpersTwigExtension extends \Twig_Extension
     public function slugify(string $string = null): string
     {
         if($string){
-        	return ElementHelper::createSlug($string);
+        	return ElementHelper::createSlug(str_replace(['.'], '', $string));
         }
 
         throw new Exception("Missing text to be slugged");
