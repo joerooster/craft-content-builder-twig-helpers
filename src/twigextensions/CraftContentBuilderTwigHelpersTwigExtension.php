@@ -22,6 +22,11 @@ use Craft;
  */
 class CraftContentBuilderTwigHelpersTwigExtension extends \Twig_Extension
 {
+	/**
+	 * @var array Contains the titles for the table of contents
+	 */
+	private $tableOfContents = [];
+
     // Public Methods
     // =========================================================================
 
@@ -50,6 +55,8 @@ class CraftContentBuilderTwigHelpersTwigExtension extends \Twig_Extension
     {
         return [
             new \Twig_SimpleFunction('slugify', [$this, 'slugify']),
+            new \Twig_SimpleFunction('addToTableOfContents', [$this, 'addToTableOfContents']),
+            new \Twig_SimpleFunction('getTableOfContents', [$this, 'getTableOfContents']),
         ];
     }
 
@@ -70,4 +77,30 @@ class CraftContentBuilderTwigHelpersTwigExtension extends \Twig_Extension
 
         throw new Exception("Missing text to be slugged");
     }
+
+	/**
+	 * Adds a title to the table of contents array
+	 *
+	 * @param string $title
+	 * @param string $id
+	 * @param string $size
+	 */
+	public function addToTableOfContents(string $title, string $id, string $size)
+	{
+		$this->tableOfContents[$size][] = [
+			'id' => $id,
+			'label' => $title
+		];
+    }
+
+	/**
+	 * Returns the table of contents
+	 *
+	 * @return array
+	 */
+	public function getTableOfContents()
+	{
+		return $this->tableOfContents;
+    }
+
 }
