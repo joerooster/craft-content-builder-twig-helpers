@@ -12,6 +12,7 @@ namespace prometeusweb\craftcontentbuildertwighelpers\twigextensions;
 
 use craft\helpers\ElementHelper;
 use prometeusweb\craftcontentbuildertwighelpers\CraftContentBuilderTwigHelpers;
+use prometeusweb\craftcontentbuildertwighelpers\services\TruncateService;
 
 use Craft;
 
@@ -46,7 +47,7 @@ class CraftContentBuilderTwigHelpersTwigExtension extends \Twig_Extension
         return [
             new \Twig_SimpleFilter('slugify', [$this, 'slugify']),
             new \Twig_SimpleFilter('closeOpenHtmlTags', [$this, 'closeOpenHtmlTags'], ['is_safe' => ['html']]),
-	        new \Twig_SimpleFilter('truncate', [$this, 'truncate'], array('needs_environment' => true)),
+	        new \Twig_SimpleFilter('ellipsis', [$this, 'ellipsis'], ['needs_environment' => true, 'is_safe' => ['all']]),
         ];
     }
 
@@ -60,8 +61,7 @@ class CraftContentBuilderTwigHelpersTwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('addToTableOfContents', [$this, 'addToTableOfContents']),
             new \Twig_SimpleFunction('getTableOfContents', [$this, 'getTableOfContents']),
             new \Twig_SimpleFunction('closeOpenHtmlTags', [$this, 'closeOpenHtmlTags'], ['is_safe' => ['html']]),
-            new \Twig_SimpleFunction('truncate', [$this, 'truncate'], ['needs_environment' => true]),
-            new \Twig_SimpleFunction('ellipsis', [$this, 'ellipsis'], ['needs_environment' => true]),
+            new \Twig_SimpleFunction('ellipsis', [$this, 'ellipsis'], ['needs_environment' => true, 'is_safe' => ['all']]),
         ];
     }
 
@@ -108,103 +108,56 @@ class CraftContentBuilderTwigHelpersTwigExtension extends \Twig_Extension
 		return $this->tableOfContents;
     }
 
-
 	/**
-	 * @param string $string
+	 * Truncates the string by words or by chars
+	 * 
+	 * @param \Twig_Environment $env
+	 * @param string|null       $string
+	 * @param null              $lenght
+	 * @param array|null        $settings
+	 *      + stripTags (bool, optional - default: false) - If the string should be stripped from html tags
+	 *      + fixClosingTags (bool, optional - default: false)
+	 *          If the string should be fixed from unclosed html tags.
+	 *          If stripTags is true, then fixClosingTags has not meaning so it becomes false
+	 *      + type (string, required, 'chars' | 'words')
+	 *          The type of truncation, if by characters (chars) or by words (words)
+	 *      + preserve (bool, optional, default: true)
+	 *          If truncating by chars, it defines if the last word integrity should be mantained
+	 *      + separator (string, optional, default: '...')
+	 *          If the string lenght is greater than the limit, a separator will
+	 *          be added at the end of the truncated string
+	 *      + useSeparator (bool, optional, default: true)
+	 *          Enable or disable separator for truncated strings
 	 *
 	 * @return string
 	 */
-	public function closeOpenHtmlTags(string $string): string
+	public function ellipsis(\Twig_Environment $env, string $string = null, $lenght = null, array $settings = null)
 	{
-		libxml_use_internal_errors(true);
-		$doc = new \DOMDocument();
-//		$doc->substituteEntities = false;
-		$doc->loadHTML('<?xml encoding="UTF-8">'.$string);
-		$doc->removeChild($doc->doctype);
-		$content = $doc->saveHTML();
-//		$content = $doc->saveHTML($doc->getElementsByTagName('body')->item(0));
-		$content = str_replace(['<html><body>', '</body></html>', '<?xml encoding="UTF-8">'], '', $content);
-		return $content;
-    }
+		$stripTags = isset($settings['stripTags']) && is_bool($settings['stripTags']) ? $settings['stripTags'] : false;
 
-	public function ellipsis(\Twig_Environment $env, string $string, $lenght = 30)
-	{
-		$blocks = $this->truncate($env, $string, $lenght, true, '...', true);
-		$first = $this->closeOpenHtmlTags($blocks[0]);
-		$second = $this->closeOpenHtmlTags($blocks[1]);
+		$fixClosingTags = true;
 
-		$asd = explode('...', $first);
-
-
-
-		preg_match_all('/(?<=\<\/)(.*?)(?=\>)/', $asd[1], $matches);
-
-//		echo '<pre>'.($asd[1]).'</pre>';
-//		echo '<pre>';
-//		var_dump(array_reverse($matches[0]));
-//		echo '</pre>';
-
-		$st = "<".implode('><', array_reverse($matches[0])).">";
-
-		return [$first, $this->closeOpenHtmlTags($st.$blocks[1])];
-
-    }
-
-	public function truncate(\Twig_Environment $env, $value, $length = 30, $preserve = false, $separator = '...', $returnBoth = false)
-	{
-
-		if (function_exists('mb_get_info')){
-			return $this->twig_truncate_mb($env, $value, $length, $preserve, $separator, $returnBoth);
+		if($stripTags) {
+			$fixClosingTags = false;
 		}
 
-		return $this->twig_truncate_std($env, $value, $length, $preserve, $separator, $returnBoth);
-    }
-
-	/** From https://github.com/twigphp/Twig-extensions/blob/master/lib/Twig/Extensions/Extension/Text.php */
-	private function twig_truncate_mb(\Twig_Environment $env, $value, $length = 30, $preserve = false, $separator = '...', $returnBoth = false)
-	{
-		if (($string_lenght = mb_strlen($value, $env->getCharset())) > $length) {
-			if ($preserve) {
-				// If breakpoint is on the last word, return the value without separator.
-				if (false === ($breakpoint = mb_strpos($value, ' ', $length, $env->getCharset()))) {
-					return $value;
-				}
-				$length = $breakpoint;
-			}
-			if($returnBoth === false){
-				return rtrim(mb_substr($value, 0, $length, $env->getCharset())).$separator;
-			}
-			else {
-				return [
-					rtrim(mb_substr($value, 0, $length, $env->getCharset())).$separator,
-					ltrim(mb_substr($value, $length, $string_lenght, $env->getCharset()))
-				];
-			}
-
+		if(isset($settings['fixClosingTags']) && $settings['fixClosingTags'] === false ){
+			$fixClosingTags = false;
 		}
-		return $value;
+
+		$options = [
+			'type' => isset($settings['type']) && in_array(strtolower($settings['type']), ['chars', 'words']) ? strtolower($settings['type']) : 'chars',
+			'preserve' => isset($settings['preserve']) && is_bool($settings['preserve']) ? $settings['preserve'] : true,
+			'fixClosingTags' => $fixClosingTags,
+			'separator' => $settings['separator'] ?? '...',
+			'useSeparator' => isset($settings['separator']) && is_bool($settings['separator']) ? $settings['separator'] : true,
+			'stripTags' => $stripTags
+		];
+
+		$truncateService = new TruncateService();
+
+		return $truncateService->truncate($env, $string, $lenght, $options);
+
     }
 
-	/** From https://github.com/twigphp/Twig-extensions/blob/master/lib/Twig/Extensions/Extension/Text.php */
-	private function twig_truncate_std(\Twig_Environment $env, $value, $length = 30, $preserve = false, $separator = '...', $returnBoth = false)
-	{
-		if (($str_length = strlen($value)) > $length) {
-			if ($preserve) {
-				if (false !== ($breakpoint = strpos($value, ' ', $length))) {
-					$length = $breakpoint;
-				}
-			}
-			if($returnBoth === false){
-				return rtrim(substr($value, 0, $length)).$separator;
-			}
-			else {
-				return [
-					rtrim(substr($value, 0, $length)).$separator,
-					ltrim(substr($value, $length, $str_length))
-				];
-			}
-
-		}
-		return $value;
-    }
 }
