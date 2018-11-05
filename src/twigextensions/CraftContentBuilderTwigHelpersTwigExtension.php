@@ -28,6 +28,11 @@ class CraftContentBuilderTwigHelpersTwigExtension extends \Twig_Extension
 	 */
 	private $tableOfContents = [];
 
+	/**
+	 * @var array Contains the occurrence count of hashes
+	 */
+	private $hashCounterRegistry = [];
+
     // Public Methods
     // =========================================================================
 
@@ -62,6 +67,9 @@ class CraftContentBuilderTwigHelpersTwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('getTableOfContents', [$this, 'getTableOfContents']),
             new \Twig_SimpleFunction('closeOpenHtmlTags', [$this, 'closeOpenHtmlTags'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('ellipsis', [$this, 'ellipsis'], ['needs_environment' => true, 'is_safe' => ['all']]),
+            new \Twig_SimpleFunction('hashAlreadyBeenUsed', [$this, 'hashAlreadyBeenUsed']),
+            new \Twig_SimpleFunction('incrementHashCount', [$this, 'incrementHashCount']),
+            new \Twig_SimpleFunction('getHashUsageCount', [$this, 'getHashUsageCount']),
         ];
     }
 
@@ -157,7 +165,42 @@ class CraftContentBuilderTwigHelpersTwigExtension extends \Twig_Extension
 		$truncateService = new TruncateService();
 
 		return $truncateService->truncate($env, $string, $lenght, $options);
+    }
 
+    /**
+     * Checks if a hash has already been used
+     * 
+     * @param  [type] $hash An alphanumeric hash
+     * @return [bool] true if hash has already been used, false if not
+     */
+    public function hashAlreadyBeenUsed($hash): bool
+    {
+    	return !empty($this->hashCounterRegistry[$hash]);
+    }
+
+    /**
+     * Increments the usage in a registry array for a hash
+     * @param  [type] $hash [description]
+     * @return void
+     */
+    public function incrementHashCount($hash)
+    {
+    	if(isset($this->hashCounterRegistry[$hash])){
+    		$this->hashCounterRegistry[$hash] += 1;
+    	}
+    	else {
+			$this->hashCounterRegistry[$hash] = 1;
+    	}
+    }
+
+    /**
+     * Gets the usage count of a hash
+     * @param  [type] $hash [description]
+     * @return int The number of occurences of the hash
+     */
+    public function getHashUsageCount($hash)
+    {
+    	return $this->hashCounterRegistry[$hash] ?? 0;
     }
 
 }
