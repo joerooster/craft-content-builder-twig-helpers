@@ -175,7 +175,11 @@ class CraftContentBuilderTwigHelpersTwigExtension extends \Twig_Extension
      */
     public function hashAlreadyBeenUsed($hash): bool
     {
-    	return !empty($this->hashCounterRegistry[$hash]);
+    	if($hash !== null && $hash !== ''){
+    		$hash = (string)$hash;
+    		return !empty($this->hashCounterRegistry[$hash]);
+    	}
+    	return null;
     }
 
     /**
@@ -185,11 +189,14 @@ class CraftContentBuilderTwigHelpersTwigExtension extends \Twig_Extension
      */
     public function incrementHashCount($hash)
     {
-    	if(isset($this->hashCounterRegistry[$hash])){
-    		$this->hashCounterRegistry[$hash] += 1;
-    	}
-    	else {
-			$this->hashCounterRegistry[$hash] = 1;
+    	if($hash !== null && $hash !== ''){
+    		$hash = (string)$hash;
+	    	if(isset($this->hashCounterRegistry[$hash])){
+	    		$this->hashCounterRegistry[$hash] += 1;
+	    	}
+	    	else {
+				$this->hashCounterRegistry[$hash] = 1;
+	    	}
     	}
     }
 
@@ -198,9 +205,13 @@ class CraftContentBuilderTwigHelpersTwigExtension extends \Twig_Extension
      * @param  [type] $hash [description]
      * @return int The number of occurences of the hash
      */
-    public function getHashUsageCount($hash)
+    public function getHashUsageCount($hash = null)
     {
-    	return $this->hashCounterRegistry[$hash] ?? 0;
+    	if($hash !== null && $hash !== ''){
+    		$hash = (string)$hash;
+    		return $this->hashCounterRegistry[$hash] ?? 0;
+    	}
+		return null;
     }
 
 }
