@@ -33,6 +33,11 @@ class CraftContentBuilderTwigHelpersTwigExtension extends \Twig_Extension
 	 */
 	private $hashCounterRegistry = [];
 
+	/**
+	 * @var array Contains an array that act as a state storage
+	 */
+	private $store = [];
+
     // Public Methods
     // =========================================================================
 
@@ -70,6 +75,10 @@ class CraftContentBuilderTwigHelpersTwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('hashAlreadyBeenUsed', [$this, 'hashAlreadyBeenUsed']),
             new \Twig_SimpleFunction('incrementHashCount', [$this, 'incrementHashCount']),
             new \Twig_SimpleFunction('getHashUsageCount', [$this, 'getHashUsageCount']),
+            new \Twig_SimpleFunction('getFromStore', [$this, 'getFromStore']),
+            new \Twig_SimpleFunction('existsInStore', [$this, 'existsInStore']),
+            new \Twig_SimpleFunction('setInStore', [$this, 'setInStore']),
+            new \Twig_SimpleFunction('deleteFromStore', [$this, 'deleteFromStore']),
         ];
     }
 
@@ -212,6 +221,79 @@ class CraftContentBuilderTwigHelpersTwigExtension extends \Twig_Extension
     		return $this->hashCounterRegistry[$hash] ?? 0;
     	}
 		return null;
+    }
+
+	/**
+	 * Gets a value from a key if available in the store array
+	 *
+	 * @param null $key
+	 *
+	 * @return mixed|null
+	 */
+	public function getFromStore($key = null)
+	{
+		if($key === null){
+			return null;
+		}
+		return $this->store[$key] ?? null;
+    }
+
+	/**
+	 * Checks in the store array if a key exists
+	 *
+	 * @param null $key
+	 *
+	 * @return bool
+	 */
+	public function existsInStore($key = null)
+	{
+		if($key === null){
+			return false;
+		}
+		return isset($this->store[$key]);
+    }
+
+	/**
+	 * Sets a value indexed with a key from the store aray
+	 *
+	 * @param null $key
+	 * @param null $value
+	 */
+	public function setInStore($key = null, $value = null)
+	{
+		if($key !== null && $value !== null){
+			$this->store[$key] = $value;
+		}
+    }
+
+	/**
+	 * Delete a key from the store array
+	 *
+	 * @param null $key
+	 */
+	public function deleteFromStore($key = null)
+	{
+		if($key !== null){
+			if($this->existsInStore($key)){
+				$this->store[$key] = null;
+			}
+		}
+    }
+
+	/**
+	 * Checks if a value exists in the store array
+	 *
+	 * @param null $value
+	 *
+	 * @return bool
+	 */
+	public function valueExistsInStore($value = null)
+	{
+		if($value === null){
+			return false;
+		}
+
+		return in_array($value, $this->store);
     }
 
 }
