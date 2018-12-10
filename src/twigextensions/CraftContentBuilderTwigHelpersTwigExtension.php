@@ -58,6 +58,7 @@ class CraftContentBuilderTwigHelpersTwigExtension extends \Twig_Extension
             new \Twig_SimpleFilter('slugify', [$this, 'slugify']),
             new \Twig_SimpleFilter('closeOpenHtmlTags', [$this, 'closeOpenHtmlTags'], ['is_safe' => ['html']]),
 	        new \Twig_SimpleFilter('ellipsis', [$this, 'ellipsis'], ['needs_environment' => true, 'is_safe' => ['all']]),
+	        new \Twig_SimpleFilter('json_decode', [$this, 'jsonDecode']),
         ];
     }
 
@@ -294,6 +295,22 @@ class CraftContentBuilderTwigHelpersTwigExtension extends \Twig_Extension
 		}
 
 		return in_array($value, $this->store);
+    }
+
+	/**
+	 * Adds json_decode functionality
+	 *
+	 * @param null $string
+	 *
+	 * @return mixed|null
+	 */
+	public function jsonDecode($string = null)
+	{
+		if($string !== null){
+			return json_decode($string);
+		}
+
+		return null;
     }
 
 }
