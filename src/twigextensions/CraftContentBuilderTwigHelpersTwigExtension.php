@@ -80,6 +80,7 @@ class CraftContentBuilderTwigHelpersTwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('existsInStore', [$this, 'existsInStore']),
             new \Twig_SimpleFunction('setInStore', [$this, 'setInStore']),
             new \Twig_SimpleFunction('deleteFromStore', [$this, 'deleteFromStore']),
+            new \Twig_SimpleFunction('generateRandomInteger', [$this, 'generateRandomInteger']),
         ];
     }
 
@@ -313,4 +314,16 @@ class CraftContentBuilderTwigHelpersTwigExtension extends \Twig_Extension
 		return null;
     }
 
+
+    /**
+     * Generate a random integer
+     *
+     * @param null $string
+     *
+     * @return int
+     */
+    public function generateRandomInteger($min = 10000, $max = 100000): int
+	{
+		return rand($min, $max);
+	}	
 }
